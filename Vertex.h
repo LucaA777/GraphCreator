@@ -31,6 +31,16 @@ public:
 	char getLabel() {
 		return label;
 	}
+
+	vector<Vertex*> getConnected() {
+		vector<Vertex*> vertices;
+		
+		for (Edge* e : edges) {
+			vertices.push_back(e -> getVertex());
+		}
+
+		return vertices;
+	}
 };
 
 #endif
