@@ -16,7 +16,7 @@ Author: Luca Ardanaz
 
 using namespace std;
 
-const bool DEBUG = false;
+const bool DEBUG = true;
 
 queue<string> tokenize(string str);
 
@@ -323,6 +323,11 @@ int main() {
 			}
 
 			if (reverseExists) {
+
+				if (DEBUG) {
+					cout << "Biridectional erase" << endl;
+				}
+
 				edges.erase(reverseMatch);
 			}
 
