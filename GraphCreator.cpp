@@ -142,6 +142,97 @@ int main() {
 	
 		}	
 
+		if (tokens.front() == "rv") {
+			tokens.pop();
+
+			//isolate label
+
+			char label = ' ';
+			try {
+				if (tokens.size() != 1) {
+					//throw error if token count isn't 1
+					throw 1000;
+				}
+
+				label = tokens.front()[0];
+			}
+			catch(...) {
+				cout << "Invalid token for command 'rv'" << endl;
+				continue;
+			}
+
+			//confirm that the label is in the set
+			if (!vertices.count(label)) {
+				cout << "No match" << endl;
+				continue;
+			}
+
+			//remove edges
+			//source: https://stackoverflow.com/questions/2874441/deleting-elements-from-stdset-while-iterating
+			for (auto it = edges.begin(); it != edges.end(); ) {
+				if (it -> start == label || it -> end == label) {
+					edges.erase(it++);
+				}
+				else {
+					++it;
+				}
+			}
+
+			//remove the vertex
+			vertices.erase(label);			
+
+			continue;
+		}
+
+		if (tokens.front() == "re") {
+			tokens.pop();
+
+			//get labels
+			char start = ' ';
+			char end = ' ';
+
+			try {			
+				if (tokens.size() != 2) {
+					//throws a random number if the size doesn't match
+					throw 1000;
+				}
+
+				start = tokens.front()[0];
+				tokens.pop();
+				end = tokens.front()[0];
+			}
+			catch(...) {
+				cout << "Invalid tokens for command 're'" << endl;
+				continue;
+			}
+
+			//ensure vertex validity
+			if (start == ' ' || end == ' ' || start == end) {
+				cout << "Invalid vertices" << endl;
+				continue;
+			}
+
+			//check that an edge exists between these two vertices
+			edge match;
+			bool exists = false;
+			for (edge e : edges) {
+				if (e.start == start && e.end == end) {
+					match = e;
+					exists = true;
+					break;
+				}	
+			}
+
+			if (!exists) {
+				cout << "No matching edge" << endl;
+				continue;
+			}
+
+			//remove the edge
+			edges.erase(match);
+	
+		}	
+
 		if (tokens.front() == "p") {
 
 			cout << endl;
