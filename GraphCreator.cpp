@@ -6,6 +6,7 @@ Author: Luca Ardanaz
 
 #include <iostream>
 #include <string>
+#include <set>
 #include <vector>
 #include <queue>
 #include "Vertex.h"
@@ -13,14 +14,25 @@ Author: Luca Ardanaz
 using namespace std;
 
 queue<string> tokenize(string str);
-Vertex* getVertexByLabel(char label, vector<Vertex*> vertices);
-int getVertexIndex(Vertex* vertex, vector<Vertex*> vertices);
+
+struct edge {
+	char start;
+	char end;
+	double value;
+};
+
+//this is necessary since I want a set of structs for edges
+//source: https://stackoverflow.com/questions/5816658/how-to-have-a-set-of-structs-in-c
+bool operator<(const edge& e1, const edge& e2) {
+	return e1.start < e2.start;
+}
 
 int main() {
 
 	string input = "";
 	queue<string> tokens;
-	vector<Vertex*> vertices;
+	set<char> vertices;
+	set<edge> edges;
 
 	do {
 
@@ -69,13 +81,13 @@ int main() {
 			}
 
 			//confirm that the label is unique
-			if (getVertexByLabel(label, vertices) != nullptr) {
-				cout << "That label is already taken" << endl;
+			if (vertices.count(label)) {
+				cout << "Label taken" << endl;
 				continue;
 			}
 
 			//add the vertex
-			vertices.push_back(new Vertex(label));
+			vertices.insert(label);
 
 			continue;
 		}
@@ -84,8 +96,8 @@ int main() {
 			tokens.pop();
 
 			//get labels and value
-			char startV = ' ';
-			char endV = ' ';
+			char start = ' ';
+			char end = ' ';
 			double val = 0.0;
 
 			try {			
@@ -94,9 +106,9 @@ int main() {
 					throw 1000;
 				}
 
-				startV = tokens.front()[0];
+				start = tokens.front()[0];
 				tokens.pop();
-				endV = tokens.front()[0];
+				end = tokens.front()[0];
 				tokens.pop();
 				val = stod(tokens.front()); 
 			}
@@ -105,18 +117,28 @@ int main() {
 				continue;
 			}
 
-			//get the vertices
-			Vertex* start = getVertexByLabel(startV, vertices);	
-			Vertex* end = getVertexByLabel(endV, vertices);	
-		
 			//ensure vertex validity
-			if (start == nullptr || end == nullptr || start == end) {
+			if (start == ' ' || end == ' ' || start == end) {
 				cout << "Invalid vertices" << endl;
 				continue;
 			}
 
-			//create the edge
-			start -> addEdge(val, end);
+			//check that an edge doesn't already exist between these two vertices
+			bool duplicate = false;
+			for (edge e : edges) {
+				if (e.start == start && e.end == end) {
+					cout << "Duplicate edge, aborted" << endl;
+					duplicate = true;
+					break;
+				}
+			}
+
+			if (duplicate) {
+				continue;
+			}
+
+			//add the edge
+			edges.insert({start, end, val});
 	
 		}	
 
@@ -134,18 +156,17 @@ int main() {
 				cout << "Dim: " << dim << endl;
 				
 				//determine connections
+				for (edge e : edges) {
+					int startIndex = distance(vertices.begin(), vertices.find(e.start));
+					int endIndex = distance(vertices.begin(), vertices.find(e.end));
+					table[endIndex][startIndex] = true;
+				}
+
+
 				//concatenate table header line
 				string header = "  ";
-				for (Vertex* vertex : vertices) {
-					
-					//determine connections
-					for (Vertex* endVertex : vertex -> getConnected()) {
-						table[getVertexIndex(endVertex, vertices)][getVertexIndex(vertex, vertices)] = true;
-					}
-
-
-					//concatenate table header
-					header += vertex -> getLabel();
+				for (char vertex : vertices) {
+					header += vertex;
 					header += " ";
 				}
 
@@ -154,7 +175,7 @@ int main() {
 				for (int i = 0; i < table.size(); i++) {
 					
 					string rowStr = "";
-					rowStr += vertices.at(i) -> getLabel();
+					rowStr += header[2 * i + 2];
 					rowStr += " ";
 
 					for (bool val : table.at(i)) {
