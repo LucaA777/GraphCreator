@@ -9,6 +9,9 @@ Author: Luca Ardanaz
 #include <set>
 #include <vector>
 #include <queue>
+#include <map>
+#include <tuple>
+#include <limits>
 #include "Vertex.h"
 
 using namespace std;
@@ -20,6 +23,8 @@ struct edge {
 	char end;
 	double value;
 };
+
+void dijkstraPathfinding(char start, char target, set<char> vertices, set<edge> edges);
 
 //this is necessary since I want a set of structs for edges
 //source: https://stackoverflow.com/questions/5816658/how-to-have-a-set-of-structs-in-c
@@ -330,3 +335,48 @@ int getVertexIndex(Vertex* vertex, vector<Vertex*> vertices) {
 	//returns -1 if no match was found
 	return -1;
 }
+
+void dijkstraPathfinding(char start, char target, set<char> vertices, set<edge> edges) {
+
+	//set queues up and create map to track shortest paths
+	set<char> visited;
+	set<char> unvisited;	
+	map<char, tuple<double, char>> paths;
+
+	for (char v : vertices) {
+		
+		//add all vertices to unvisited
+		unvisited.insert(v);
+
+		//add all vertices to map
+		//path length is 0 if the vertex is the start
+		//otherwise max it out
+		paths[v] = make_tuple((v == start ? 0 : numeric_limits<double>::max()), ' ');
+	}
+
+	
+	//begin algorithm
+	char current = start;
+
+	//get unvisited neighbors
+	queue<edge> neighbors;
+	for (edge e : edges) {
+		//unvisited neighbor if:
+		// - the edge starts at the current vertex
+		// - the edge ends at an unvisited vertex 
+		if (e.start == current && unvisited.count(e.end)) {
+			neighbors.push(e);
+		}
+	}	
+
+	
+
+
+}
+
+
+
+
+
+
+
