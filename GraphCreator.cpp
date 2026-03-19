@@ -144,7 +144,7 @@ int main() {
 
 			//add the edge
 			edges.insert({start, end, val});
-	
+
 		}	
 
 		if (tokens.front() == "rv") {
@@ -235,7 +235,7 @@ int main() {
 
 			//remove the edge
 			edges.erase(match);
-	
+
 		}	
 
 		if (tokens.front() == "p") {
@@ -247,10 +247,10 @@ int main() {
 				//create empty table
 				int dim = vertices.size();
 				vector<vector<bool>> table(dim, vector<bool>(dim, false));
-	
+
 				//print table
 				cout << "Dim: " << dim << endl;
-				
+
 				//determine connections
 				for (edge e : edges) {
 					int startIndex = distance(vertices.begin(), vertices.find(e.start));
@@ -269,7 +269,7 @@ int main() {
 				cout << header << endl;
 
 				for (int i = 0; i < table.size(); i++) {
-					
+
 					string rowStr = "";
 					rowStr += header[2 * i + 2];
 					rowStr += " ";
@@ -320,7 +320,7 @@ Vertex* getVertexByLabel(char label, vector<Vertex*> vertices) {
 			return v;
 		}	
 	}
-	
+
 	return nullptr;
 }
 
@@ -344,7 +344,7 @@ void dijkstraPathfinding(char start, char target, set<char> vertices, set<edge> 
 	map<char, tuple<double, char>> paths;
 
 	for (char v : vertices) {
-		
+
 		//add all vertices to unvisited
 		unvisited.insert(v);
 
@@ -354,23 +354,33 @@ void dijkstraPathfinding(char start, char target, set<char> vertices, set<edge> 
 		paths[v] = make_tuple((v == start ? 0 : numeric_limits<double>::max()), ' ');
 	}
 
-	
+
 	//begin algorithm
-	char current = start;
+	while (!unvisited.empty()) {
+		char current = start;
 
-	//get unvisited neighbors
-	queue<edge> neighbors;
-	for (edge e : edges) {
-		//unvisited neighbor if:
-		// - the edge starts at the current vertex
-		// - the edge ends at an unvisited vertex 
-		if (e.start == current && unvisited.count(e.end)) {
-			neighbors.push(e);
-		}
-	}	
+		//get unvisited neighbors
+		queue<edge> neighbors;
+		for (edge e : edges) {
+			//unvisited neighbor if:
+			// - the edge starts at the current vertex
+			// - the edge ends at an unvisited vertex 
+			if (e.start == current && unvisited.count(e.end)) {
+				neighbors.push(e);
+			}
+		}	
 
-	
+		//for each neighbor, check and update paths
+		while (!neighbors.empty()) {
+			//store the current neighbor
+			char neighbor = neighbors.front();
+			neighbors.pop();
 
+			//calculate the path length
+
+
+		}	
+	}
 
 }
 
