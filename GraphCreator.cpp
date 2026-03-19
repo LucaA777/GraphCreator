@@ -94,6 +94,11 @@ int main() {
 				continue;
 			}
 
+			if (DEBUG) {
+				cout << "Tokens processed" << endl;
+			}
+
+
 			//confirm that the label is unique
 			if (vertices.count(label)) {
 				cout << "Label taken" << endl;
@@ -142,6 +147,11 @@ int main() {
 				cout << "Invalid tokens for command 'ae'" << endl;
 				continue;
 			}
+
+			if (DEBUG) {
+				cout << "Tokens processed" << endl;
+			}
+
 
 			//ensure vertex validity
 			if (start == ' ' || end == ' ' || start == end) {
@@ -213,6 +223,11 @@ int main() {
 				continue;
 			}
 
+			if (DEBUG) {
+				cout << "Tokens processed" << endl;
+			}
+
+
 			//confirm that the label is in the set
 			if (!vertices.count(label)) {
 				cout << "No match" << endl;
@@ -270,6 +285,11 @@ int main() {
 				continue;
 			}
 
+			if (DEBUG) {
+				cout << "Tokens processed" << endl;
+			}
+
+
 			//ensure vertex validity
 			if (start == ' ' || end == ' ' || start == end) {
 				cout << "Invalid vertices" << endl;
@@ -319,9 +339,6 @@ int main() {
 				//create empty table
 				int dim = vertices.size();
 				vector<vector<bool>> table(dim, vector<bool>(dim, false));
-
-				//print table
-				cout << "Dim: " << dim << endl;
 
 				//determine connections
 				for (edge e : edges) {
