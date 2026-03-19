@@ -14,6 +14,7 @@ using namespace std;
 
 queue<string> tokenize(string str);
 Vertex* getVertexByLabel(char label, vector<Vertex*> vertices);
+int getVertexIndex(Vertex* vertex, vector<Vertex*> vertices);
 
 int main() {
 
@@ -55,6 +56,11 @@ int main() {
 
 			char label = ' ';
 			try {
+				if (tokens.size() != 1) {
+					//throw error if token count isn't 1
+					throw 1000;
+				}
+
 				label = tokens.front()[0];
 			}
 			catch(...) {
@@ -83,11 +89,16 @@ int main() {
 			double val = 0.0;
 
 			try {			
+				if (tokens.size() != 3) {
+					//throws a random number if the size doesn't match
+					throw 1000;
+				}
+
 				startV = tokens.front()[0];
 				tokens.pop();
 				endV = tokens.front()[0];
 				tokens.pop();
-				val = stod(!tokens.empty() ? tokens.front() : "a"); 
+				val = stod(tokens.front()); 
 			}
 			catch(...) {
 				cout << "Invalid tokens for command 'ae'" << endl;
@@ -118,15 +129,22 @@ int main() {
 				//create empty table
 				int dim = vertices.size();
 				vector<vector<bool>> table(dim, vector<bool>(dim, false));
-
-				//determine values
-				
 	
 				//print table
 				cout << "Dim: " << dim << endl;
 				
+				//determine connections
+				//concatenate table header line
 				string header = "  ";
 				for (Vertex* vertex : vertices) {
+					
+					//determine connections
+					for (Vertex* endVertex : vertex -> getConnected()) {
+						table[getVertexIndex(endVertex, vertices)][getVertexIndex(vertex, vertices)] = true;
+					}
+
+
+					//concatenate table header
 					header += vertex -> getLabel();
 					header += " ";
 				}
@@ -187,4 +205,16 @@ Vertex* getVertexByLabel(char label, vector<Vertex*> vertices) {
 	}
 	
 	return nullptr;
+}
+
+int getVertexIndex(Vertex* vertex, vector<Vertex*> vertices) {
+	//find match, return the index
+	for (int i = 0; i < vertices.size(); i++) {
+		if (vertices.at(i) == vertex) {
+			return i;
+		}
+	}
+
+	//returns -1 if no match was found
+	return -1;
 }
