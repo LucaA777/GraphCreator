@@ -179,6 +179,8 @@ int main() {
 				edges.insert({end, start, val});
 			}
 
+			continue;
+
 		}	
 
 		if (tokens.front() == "rv") {
@@ -253,13 +255,18 @@ int main() {
 
 			//check that an edge exists between these two vertices
 			edge match;
+			edge reverseMatch;
 			bool exists = false;
+			bool reverseExists = false;
 			for (edge e : edges) {
 				if (e.start == start && e.end == end) {
 					match = e;
 					exists = true;
-					break;
 				}	
+				if (e.start == end && e.end == start) {
+					reverseMatch = e;
+					reverseExists = true;
+				}
 			}
 
 			if (!exists) {
@@ -267,8 +274,16 @@ int main() {
 				continue;
 			}
 
-			//remove the edge
-			edges.erase(match);
+			//remove the edges
+			else {
+				edges.erase(match);
+			}
+
+			if (reverseExists) {
+				edges.erase(reverseMatch);
+			}
+
+			continue;
 
 		}	
 
@@ -366,6 +381,10 @@ int main() {
 			continue;
 
 		}	
+
+		if (tokens.front() == "q") {
+			continue;
+		}
 
 		//no matching command
 		cout << "No matching command" << endl;
