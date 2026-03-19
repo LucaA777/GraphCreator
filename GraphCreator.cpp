@@ -49,12 +49,17 @@ int main() {
 		cout << "Enter command (enter 'help' for commands):" << endl;
 		getline(cin, input);
 		tokens = tokenize(input);		
-
+		
 		if (tokens.empty()) {
 			continue;
 		}
 
+		if (tokens.size() == 1 && tokens.front() != "p") {
+			continue;
+		}
+
 		// --<< RUN CORRESPONDING COMMAND >>--
+		
 
 		if (tokens.front() == "help") {
 			cout << endl;
@@ -141,6 +146,12 @@ int main() {
 			//ensure vertex validity
 			if (start == ' ' || end == ' ' || start == end) {
 				cout << "Invalid vertices" << endl;
+				continue;
+			}
+
+			//ensure vertices exist
+			if (!vertices.count(start) || !vertices.count(end)) {
+				cout << "Vertices don't exist" << endl;
 				continue;
 			}
 
@@ -231,9 +242,10 @@ int main() {
 			//get labels
 			char start = ' ';
 			char end = ' ';
+			bool bidirectional;
 
 			try {			
-				if (tokens.size() != 2) {
+				if (tokens.size() != 2 && tokens.size() != 3) {
 					//throws a random number if the size doesn't match
 					throw 1000;
 				}
@@ -241,6 +253,17 @@ int main() {
 				start = tokens.front()[0];
 				tokens.pop();
 				end = tokens.front()[0];
+				tokens.pop();
+
+				if (!tokens.empty()) {
+					bidirectional = tokens.front() == "-d";
+
+					//if not bidirectional, but there are 3 tokens, error
+					if (!bidirectional) {
+						throw 2000;
+					}	
+				}
+
 			}
 			catch(...) {
 				cout << "Invalid tokens for command 're'" << endl;
@@ -263,7 +286,7 @@ int main() {
 					match = e;
 					exists = true;
 				}	
-				if (e.start == end && e.end == start) {
+				if (bidirectional && e.start == end && e.end == start) {
 					reverseMatch = e;
 					reverseExists = true;
 				}
@@ -382,10 +405,6 @@ int main() {
 
 		}	
 
-		if (tokens.front() == "q") {
-			continue;
-		}
-
 		//no matching command
 		cout << "No matching command" << endl;
 
@@ -409,7 +428,9 @@ queue<string> tokenize(string str) {
 		}
 	}
 
-	tokens.push(token);
+	if (token != "") {
+		tokens.push(token);
+	}
 
 	return tokens;
 }
