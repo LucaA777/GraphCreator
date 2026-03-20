@@ -35,20 +35,37 @@ bool operator<(const edge& e1, const edge& e2) {
 	return e1.start < e2.start || e1.end < e2.end;
 }
 
+#ifndef DEBUG
+#define DEBUG_MSG(str) do {cout << str << endl; } while( false )
+#else
+#define DEBUG_MSG(str) do { } while( false )
+#endif
+
 int main() {
 
 	string input = "";
 	queue<string> tokens;
 	set<char> vertices;
 	set<edge> edges;
+	string keyword = "";
 
 	do {
+
+		if (DEBUG) {
+			cout << "Asking for input..." << endl;
+		}	
 
 		// --<< GET USER INPUT >>--
 		cout << endl << endl;
 		cout << "Enter command (enter 'help' for commands):" << endl;
 		getline(cin, input);
 		tokens = tokenize(input);		
+				
+		keyword = tokens.front();
+
+		if (DEBUG) {
+			cout << "Input taken" << endl;
+		}
 		
 		if (tokens.empty()) {
 			continue;
@@ -61,7 +78,7 @@ int main() {
 		// --<< RUN CORRESPONDING COMMAND >>--
 		
 
-		if (tokens.front() == "help") {
+		if (keyword == "help") {
 			cout << endl;
 			cout << "Commands:" << endl;
 			cout << "av [label] - add vertex with unique label" << endl;
@@ -75,7 +92,7 @@ int main() {
 			continue;
 		}			
 
-		if (tokens.front() == "av") {
+		if (keyword == "av") {
 			tokens.pop();
 
 			//isolate label
@@ -111,7 +128,7 @@ int main() {
 			continue;
 		}
 
-		if (tokens.front() == "ae") {
+		if (keyword == "ae") {
 			tokens.pop();
 
 			//get labels and value
@@ -204,7 +221,7 @@ int main() {
 
 		}	
 
-		if (tokens.front() == "rv") {
+		if (keyword == "rv") {
 			tokens.pop();
 
 			//isolate label
@@ -251,7 +268,7 @@ int main() {
 			continue;
 		}
 
-		if (tokens.front() == "re") {
+		if (keyword == "re") {
 			tokens.pop();
 
 			//get labels
@@ -259,7 +276,7 @@ int main() {
 			char end = ' ';
 			bool bidirectional;
 
-			try {			
+			try {	
 				if (tokens.size() != 2 && tokens.size() != 3) {
 					//throws a random number if the size doesn't match
 					throw 1000;
@@ -301,6 +318,11 @@ int main() {
 			edge reverseMatch;
 			bool exists = false;
 			bool reverseExists = false;
+
+			if (DEBUG) {
+				cout << "Beginning edge check..." << endl;
+			}
+
 			for (edge e : edges) {
 				if (e.start == start && e.end == end) {
 					match = e;
@@ -312,9 +334,17 @@ int main() {
 				}
 			}
 
+			if (DEBUG) {
+				cout << "Finished edge check" << endl;
+			}
+
 			if (!exists) {
 				cout << "No matching edge" << endl;
 				continue;
+			}
+
+			if (DEBUG) {
+				cout << "Begining erasing..." << endl;
 			}
 
 			//remove the edges
@@ -331,11 +361,15 @@ int main() {
 				edges.erase(reverseMatch);
 			}
 
+			if (DEBUG) {
+				cout << "Finished" << endl;
+			}
+
 			continue;
 
 		}	
 
-		if (tokens.front() == "p") {
+		if (keyword == "p") {
 
 			cout << endl;
 
@@ -384,7 +418,7 @@ int main() {
 			continue;
 		}	
 
-		if (tokens.front() == "f") {
+		if (keyword == "f") {
 			tokens.pop();
 
 			//get labels
@@ -431,8 +465,10 @@ int main() {
 		cout << "No matching command" << endl;
 
 
-	} while (tokens.front() != "q");	
-
+	} while (keyword != "q");	
+		
+	cout << "Quitting..." << endl;
+	
 	return 0;
 }
 
