@@ -16,7 +16,7 @@ Author: Luca Ardanaz
 
 using namespace std;
 
-const bool DEBUG = true;
+const bool DEBUG = false;
 
 queue<string> tokenize(string str);
 
@@ -35,12 +35,6 @@ bool operator<(const edge& e1, const edge& e2) {
 	return e1.start < e2.start || e1.end < e2.end;
 }
 
-#ifndef DEBUG
-#define DEBUG_MSG(str) do {cout << str << endl; } while( false )
-#else
-#define DEBUG_MSG(str) do { } while( false )
-#endif
-
 int main() {
 
 	string input = "";
@@ -50,10 +44,6 @@ int main() {
 	string keyword = "";
 
 	do {
-
-		if (DEBUG) {
-			cout << "Asking for input..." << endl;
-		}	
 
 		// --<< GET USER INPUT >>--
 		cout << endl << endl;
@@ -71,9 +61,11 @@ int main() {
 			continue;
 		}
 
+		/*
 		if (tokens.size() == 1 && tokens.front() != "p") {
 			continue;
 		}
+		*/
 
 		// --<< RUN CORRESPONDING COMMAND >>--
 		
@@ -86,6 +78,7 @@ int main() {
 			cout << "\tadding -d adds edge in both directions" << endl;
 			cout << "rv [label] - remove vertex by label" << endl;
 			cout << "re [vertex 1] [vertex 2] - remove edge between vertecies" << endl;
+			cout << "\tadding -d adds edge in both directions" << endl;
 			cout << "p - print adjacency table" << endl;
 			cout << "f [start] [end] - find shortext path" << endl;
 			cout << "q - quit" << endl;
@@ -222,9 +215,7 @@ int main() {
 		}	
 
 		if (keyword == "rv") {
-			tokens.pop();
-
-			//isolate label
+			tokens.pop();false	//isolate label
 
 			char label = ' ';
 			try {
@@ -343,12 +334,12 @@ int main() {
 				continue;
 			}
 
-			if (DEBUG) {
-				cout << "Begining erasing..." << endl;
-			}
-
 			//remove the edges
 			else {
+				if (DEBUG) {
+					cout << "Begining erasing..." << endl;
+				}
+
 				edges.erase(match);
 			}
 
@@ -377,13 +368,13 @@ int main() {
 
 				//create empty table
 				int dim = vertices.size();
-				vector<vector<bool>> table(dim, vector<bool>(dim, false));
+				vector<vector<char>> table(dim, vector<char>(dim, 'X'));
 
 				//determine connections
 				for (edge e : edges) {
 					int startIndex = distance(vertices.begin(), vertices.find(e.start));
 					int endIndex = distance(vertices.begin(), vertices.find(e.end));
-					table[endIndex][startIndex] = true;
+					table[endIndex][startIndex] = e.value + '0';
 				}
 
 
@@ -402,8 +393,8 @@ int main() {
 					rowStr += header[2 * i + 2];
 					rowStr += " ";
 
-					for (bool val : table.at(i)) {
-						rowStr += (val ? "T" : "F");
+					for (char val : table.at(i)) {
+						rowStr += val;
 						rowStr += " ";
 					}
 
