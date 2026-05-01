@@ -23,7 +23,7 @@ queue<string> tokenize(string str);
 struct edge {
 	char start;
 	char end;
-	double value;
+	int value;
 };
 
 void dijkstraPathfinding(char start, char target, set<char> vertices, set<edge> edges);
@@ -73,7 +73,7 @@ int main() {
 		if (keyword == "help") {
 			cout << endl;
 			cout << "Commands:" << endl;
-			cout << "av [label] - add vertex with unique label" << endl;
+			cout << "av [label] - add vertex with unique character label" << endl;
 			cout << "ae [vertex 1] [vertex 2] [value] - add edge between vertecies with value" << endl;
 			cout << "\tadding -d adds edge in both directions" << endl;
 			cout << "rv [label] - remove vertex by label" << endl;
@@ -127,7 +127,7 @@ int main() {
 			//get labels and value
 			char start = ' ';
 			char end = ' ';
-			double val = 0.0;
+			int val = 0;
 			bool bidirectional = false;
 
 			try {			
@@ -168,7 +168,13 @@ int main() {
 				cout << "Invalid vertices" << endl;
 				continue;
 			}
-
+			
+			//make sure a valid value was entered
+			if (val < 0) {
+				cout << "Invalid value" << endl;
+				continue;
+			}
+		
 			//ensure vertices exist
 			if (!vertices.count(start) || !vertices.count(end)) {
 				cout << "Vertices don't exist" << endl;
@@ -215,8 +221,9 @@ int main() {
 		}	
 
 		if (keyword == "rv") {
-			tokens.pop();false	//isolate label
+			tokens.pop();
 
+			//isolate label
 			char label = ' ';
 			try {
 				if (tokens.size() != 1) {
@@ -368,15 +375,18 @@ int main() {
 
 				//create empty table
 				int dim = vertices.size();
-				vector<vector<char>> table(dim, vector<char>(dim, 'X'));
+				int table[dim][dim] = {-1};
+				int columnWidths[dim] = {1};				
 
 				//determine connections
 				for (edge e : edges) {
 					int startIndex = distance(vertices.begin(), vertices.find(e.start));
 					int endIndex = distance(vertices.begin(), vertices.find(e.end));
-					table[endIndex][startIndex] = e.value + '0';
-				}
+					table[endIndex][startIndex] = e.value;
 
+					int digits = to_string(e.value).size();
+					columnWidths[startIndex] = max(columnWidths[startIndex], digits);
+				}
 
 				//concatenate table header line
 				string header = "  ";
@@ -387,15 +397,18 @@ int main() {
 
 				cout << header << endl;
 
-				for (int i = 0; i < table.size(); i++) {
+				for (int i = 0; i < dim; i++) {
 
 					string rowStr = "";
 					rowStr += header[2 * i + 2];
 					rowStr += " ";
 
-					for (char val : table.at(i)) {
-						rowStr += val;
-						rowStr += " ";
+					for (int j = 0; j < dim; j++) {
+						rowStr += (table[i][j] == -1 ? "X" : to_string(table[i][j]));
+						
+						for (int k = 0; k < columnWidths[j]; k++) {
+							rowStr += " ";
+						}
 					}
 
 					cout << rowStr << endl;
