@@ -13,6 +13,7 @@ Author: Luca Ardanaz
 #include <tuple>
 #include <limits>
 #include <stack>
+#include <numeric>
 
 using namespace std;
 
@@ -375,8 +376,20 @@ int main() {
 
 				//create empty table
 				int dim = vertices.size();
-				int table[dim][dim] = {-1};
-				int columnWidths[dim] = {1};				
+
+				int table[dim][dim];
+
+				for (auto& row : table) {
+					for (int& cell : row) {
+						cell = -1;
+					}
+				}
+
+				int columnWidths[dim];				
+
+				for (int& cell : columnWidths) {
+					cell = 1;
+				}
 
 				//determine connections
 				for (edge e : edges) {
@@ -384,6 +397,7 @@ int main() {
 					int endIndex = distance(vertices.begin(), vertices.find(e.end));
 					table[endIndex][startIndex] = e.value;
 
+					//track largest number in each column for spacing later
 					int digits = to_string(e.value).size();
 					columnWidths[startIndex] = max(columnWidths[startIndex], digits);
 				}
@@ -392,21 +406,30 @@ int main() {
 				string header = "  ";
 				for (char vertex : vertices) {
 					header += vertex;
-					header += " ";
+					
+					int spacing = columnWidths[distance(vertices.begin(), vertices.find(vertex))];
+					
+					for (int i = 0; i < spacing; i++) {
+						header += " ";
+					}
 				}
 
 				cout << header << endl;
 
 				for (int i = 0; i < dim; i++) {
-
+					
+					//print row header
 					string rowStr = "";
-					rowStr += header[2 * i + 2];
+					rowStr += header[accumulate(columnWidths, columnWidths + i, 0) + 2 + i];
 					rowStr += " ";
 
 					for (int j = 0; j < dim; j++) {
+						//prints either the value of the connection or and X if there is no connection
 						rowStr += (table[i][j] == -1 ? "X" : to_string(table[i][j]));
-						
-						for (int k = 0; k < columnWidths[j]; k++) {
+					
+						//calculates the spacing necessary for the entire column to be lined up	
+						int spacing = columnWidths[j] - to_string(abs(table[i][j])).size() + 1;
+						for (int k = 0; k < spacing; k++) {
 							rowStr += " ";
 						}
 					}
